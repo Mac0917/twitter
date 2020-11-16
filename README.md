@@ -1,39 +1,93 @@
-### twitter認証のやり方
- 参考https://ikatde.com/ruby-on-rails-twitter-omniauth/
+## 概要
+twitter apiを使った練習用のアプリです。
 
-# 1  twitterのapiキーを取得 
+## バージョン
+ruby・・・2.5.7<br>
+rails・・・5.2.4.4<br>
+mysql・・・5.7
+
+## ローカル環境での実行手順
+dockerとdocker-composeを自分のpcにインストール
+
+好きなディレクトリで<br>
+`git clone https://github.com/Mac0917/twitter.git`
+
+移動<br>
+`cd twitter`
+
+docker-composeを実行<br>
+`docker-compose up -d`
+
+データベース作成<br>
+`docker exec -it twitter_app_1 bash`(コンテナに入る)<br>
+`rails db:create`<br>
+`rails db:migrate`<br>
+
+アクセス<br>
+http://localhost/<br>
+twitter APIを取得してないのでエラーがでます。下の見出しを読んで実装してみてください。
+
+終了<br>
+`exit`(コンテナから出る)<br>
+`docker-compose stop`<br>
+`docker-compose rm`<br>
+`docker rmi twitter_app twitter_web`<br>
+`docker volume rm twitter_db-data twitter_public-data twitter_tmp-data`
+
+リポジトリを削除<br>
+`cd ..`<br>
+`rm -rf twitter`
+
+
+## twitter認証のやり方
+ 参考・・・https://ikatde.com/ruby-on-rails-twitter-omniauth/
+
+### 1  twitterのapiキーを取得 
   https://developer.twitter.com/jaで自分のアプリを制作してapiキーをゲット
   自分のtwitterでメールアドレスを登録しないと弾かれる可能性あり
 
-# 2 twitterのapiキーの認証設定 大事
-　callbackurlのみ設定しておく
-  http://localhost:3000/auth/twitter/callback  このように書く
+### 2 twitterのapiキーの認証設定 すごく大事
+　callbackurlのみ設定しておく<br>
+　このように書く<br>
+  ``
+  http://localhost:3000/auth/twitter/callback 
+  ``
   <アプリのURL>/auth/twitter/callback  
   一つだけ設定していればいい
-  これは設定のtwitterのダッシュボードのurl
-  https://developer.twitter.com/en/portal/projects/1294832087715864576/apps/18622424/auth-settings
 
-# 3 rails を書く
+### 3 rails を記述
+  `
   gem 'dotenv-rails'
+  `
+  `
   bundle install
-  .envをtouchで作る
+  `
+  .envをtouchで作る<br>
   .envファイルに
+  ``
     TWITTER_CONSUMER_KEY='ここに API key を記述'
     TWITTER_SECRET_KEY='ここに API secret key を記述'
+  ``
   igonreに.envを記述
 
+  ``
   gem 'omniauth-twitter'
   gem "omniauth-rails_csrf_protection"
   bundle install
-
+  ``
+  
   「omniauth.rb」というファイルを「config/initializers」のディレクトリに作成
   そこに
+  ``
     Rails.application.config.middleware.use OmniAuth::Builder do
         provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_SECRET_KEY']
     end
-
+  ``
+  ``
 　rails g model User provider:string uid:string nickname:string name:string          image_url:string description:string
+  ``
 
+``
 class User < ApplicationRecord
   def self.find_or_create_from_auth(auth)
     provider = auth[:provider]
@@ -51,10 +105,13 @@ class User < ApplicationRecord
     end
   end
 end
+``
 
-
+``
 rails g controller Sessions
+``
 
+``
 class SessionsController < ApplicationController
 
   def create
@@ -69,9 +126,13 @@ class SessionsController < ApplicationController
   end  
   
 end
+``
 
+``
  rails g controller Homes
+``
 
+``
  class HomesController < ApplicationController
   def index
     if session[:user_id].nil?
@@ -84,13 +145,15 @@ end
   def login
   end
 end
+``
 
-
+``
 <%= link_to "login" ,"/auth/twitter", method: :post %> これは自分のアプリではなくtwitterの認証画面にいく
-
+``
 
 
 ルーティング
+``
 Rails.application.routes.draw do
   root 'homes#index'
   get '/homes', to: 'homes#index'
@@ -99,12 +162,14 @@ Rails.application.routes.draw do
   get '/logout', to: 'sessions#destroy'
   get '/login', to: 'homes#login'
 end
-
+``
 
 ### userが認証を拒否したとき
  omniauth.rbで
+``
  OmniAuth.config.on_failure = Proc.new { |env|
   OmniAuth::FailureEndpoint.new(env).redirect_to_failure
 }
-を記述するとコールバックが
+``
+を記述するとコールバックが<br>
  [GET] "/auth/failure"になる
