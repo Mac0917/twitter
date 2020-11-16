@@ -164,6 +164,12 @@ Rails.application.routes.draw do
 end
 ```
 
+コールバックした後は
+`
+request.env['omniauth.auth']
+`
+これでデータを取得できる
+
 ### userが認証を拒否したとき
  omniauth.rbで
 ```
