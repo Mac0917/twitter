@@ -43,7 +43,8 @@ twitter APIを取得してないのでエラーがでます。下の見出しを
  参考・・・https://ikatde.com/ruby-on-rails-twitter-omniauth/
 
 ### 1  twitterのapiキーを取得 
-  https://developer.twitter.com/jaで自分のアプリを制作してapiキーをゲット
+  https://developer.twitter.com/ja <br>
+  より自分のアプリを制作してapiキーをゲット
   自分のtwitterでメールアドレスを登録しないと弾かれる可能性あり
 
 ### 2 twitterのapiキーの認証設定 すごく大事
