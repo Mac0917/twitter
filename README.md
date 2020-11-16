@@ -59,36 +59,35 @@ twitter APIを取得してないのでエラーがでます。下の見出しを
 ### 3 rails を記述
   `
   gem 'dotenv-rails'
-  `
-  `
   bundle install
   `
+  <br>
   .envをtouchで作る<br>
   .envファイルに
-  ``
+  ```
     TWITTER_CONSUMER_KEY='ここに API key を記述'
     TWITTER_SECRET_KEY='ここに API secret key を記述'
-  ``
+  ```
   igonreに.envを記述
 
-  ``
+  ```
   gem 'omniauth-twitter'
   gem "omniauth-rails_csrf_protection"
   bundle install
-  ``
+  ```
   
   「omniauth.rb」というファイルを「config/initializers」のディレクトリに作成
   そこに
-  ``
+  ```
     Rails.application.config.middleware.use OmniAuth::Builder do
         provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_SECRET_KEY']
     end
-  ``
-  ``
+  ```
+  ```
 　rails g model User provider:string uid:string nickname:string name:string          image_url:string description:string
-  ``
+  ```
 
-``
+```
 class User < ApplicationRecord
   def self.find_or_create_from_auth(auth)
     provider = auth[:provider]
@@ -106,13 +105,13 @@ class User < ApplicationRecord
     end
   end
 end
-``
+```
 
-``
+```
 rails g controller Sessions
-``
+```
 
-``
+```
 class SessionsController < ApplicationController
 
   def create
@@ -127,13 +126,13 @@ class SessionsController < ApplicationController
   end  
   
 end
-``
+```
 
-``
+```
  rails g controller Homes
-``
+```
 
-``
+```
  class HomesController < ApplicationController
   def index
     if session[:user_id].nil?
@@ -146,15 +145,15 @@ end
   def login
   end
 end
-``
+```
 
-``
+```
 <%= link_to "login" ,"/auth/twitter", method: :post %> これは自分のアプリではなくtwitterの認証画面にいく
-``
+```
 
 
 ルーティング
-``
+```
 Rails.application.routes.draw do
   root 'homes#index'
   get '/homes', to: 'homes#index'
@@ -163,14 +162,14 @@ Rails.application.routes.draw do
   get '/logout', to: 'sessions#destroy'
   get '/login', to: 'homes#login'
 end
-``
+```
 
 ### userが認証を拒否したとき
  omniauth.rbで
-``
+```
  OmniAuth.config.on_failure = Proc.new { |env|
   OmniAuth::FailureEndpoint.new(env).redirect_to_failure
 }
-``
+```
 を記述するとコールバックが<br>
  [GET] "/auth/failure"になる
