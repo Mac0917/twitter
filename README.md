@@ -24,7 +24,7 @@ docker-composeを実行<br>
 `rails db:migrate`<br>
 
 アクセス<br>
-http://localhost/<br>
+http://localhost:3000/<br>
 twitter APIを取得してないのでエラーがでます。下の見出しを読んで実装してみてください。
 
 終了<br>
